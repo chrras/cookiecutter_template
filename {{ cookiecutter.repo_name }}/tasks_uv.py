@@ -6,6 +6,23 @@ WINDOWS = os.name == "nt"
 PROJECT_NAME = "{{ cookiecutter.project_name }}"
 PYTHON_VERSION = "{{ cookiecutter.python_version }}"
 
+# Setup commands
+@task
+def create_venv(ctx: Context) -> None:
+    """Create a uv environment with the given project name and Python version.
+
+    Usage:
+        invoke create_venv
+        invoke create_venv --python=3.12.
+    """
+    ctx.run(f"uv venv --python {PYTHON_VERSION} .venv", echo=True, pty=not WINDOWS)
+
+@task
+def dependencies(ctx: Context) -> None:
+    """Install project dependencies and activate the virtual environment."""
+    ctx.run("uv sync", echo=True, pty=not WINDOWS)
+    ctx.run("source .venv/bin/activate", echo=True, pty=not WINDOWS)
+
 # Project commands
 @task
 def preprocess_data(ctx: Context) -> None:
